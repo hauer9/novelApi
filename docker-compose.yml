@@ -12,11 +12,11 @@ services:
       - jenkins_data:/var/jenkins_home
   redis:
     image: redis
-    container_name: novelApi-redis
+    container_name: novelApi_redis
     restart: always
   db:
     image: mysql
-    container_name: novelApi-mysql
+    container_name: novelApi_mysql
     restart: always
     command: --default-authentication-plugin=mysql_native_password
     volumes:
@@ -28,7 +28,7 @@ services:
       MYSQL_PASSWORD: asd.0399
   nginx:
     build: ./nginx
-    container_name: novelApi-nginx
+    container_name: novelApi_nginx
     restart: always
     volumes:
       - jenkins_data:/var/jenkins_home
@@ -38,6 +38,8 @@ services:
       - 443:443
     depends_on:
       - api
+    networks:
+      - nginx_network
   api:
     build: ./novelApi
     image: novel_api
@@ -56,3 +58,6 @@ volumes:
   jenkins_data:
   api_data:
   db_data:
+networks:
+  nginx_network:
+    driver: bridge
