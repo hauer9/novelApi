@@ -32,19 +32,19 @@ services:
     restart: always
     volumes:
       - jenkins_data:/var/jenkins_home
-      - api_data:/novelApi
+      - novelapi_data:/novelApi
       - ./log:/var/log/nginx
     ports:
       - 443:443
     depends_on:
-      - api
-  api:
+      - novelapi
+  novelapi:
     build: ./novelApi
-    image: novel_api
+    image: novelapi
     container_name: novelApi
     command: uwsgi --ini uwsgi.ini
     volumes:
-      - api_data:/novelApi
+      - novelapi_data:/novelApi
       - jenkins_data:/var/jenkins_home
     env_file:
       - ./novelApi/.env
@@ -55,4 +55,4 @@ services:
 volumes:
   jenkins_data:
   db_data:
-  api_data:
+  novelapi_data:
