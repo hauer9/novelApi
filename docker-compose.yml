@@ -19,6 +19,8 @@ services:
     container_name: novelApi-mysql
     restart: always
     command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - db_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: asd.0399
       MYSQL_DATABASE: novel
@@ -38,17 +40,19 @@ services:
       - novelapi
   novelapi:
     build: ./novelApi
+    image: novelApi
     container_name: novelApi
     command: uwsgi --ini novelApiUwsgi.ini
     volumes:
       - novelapi_data:/novelApi
       - jenkins_data:/var/jenkins_home
     env_file:
-      - ./novelApi/novelApi.env
+      - ./novelApi/.env
     expose:
       - 8002
     depends_on:
       - db
 volumes:
   jenkins_data:
+  db_data:
   novelapi_data:
