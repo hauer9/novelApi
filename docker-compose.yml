@@ -12,15 +12,13 @@ services:
       - jenkins_data:/var/jenkins_home
   redis:
     image: redis
-    container_name: novelApi-redis
+    container_name: novelApi_redis
     restart: always
   db:
     image: mysql
-    container_name: novelApi-mysql
+    container_name: novelApi_mysql
     restart: always
     command: --default-authentication-plugin=mysql_native_password
-    volumes:
-      - db_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: asd.0399
       MYSQL_DATABASE: novel
@@ -28,23 +26,23 @@ services:
       MYSQL_PASSWORD: asd.0399
   nginx:
     build: ./nginx
-    container_name: novelApi-nginx
+    container_name: novelApi_nginx
     restart: always
     volumes:
       - jenkins_data:/var/jenkins_home
-      - novelapi_data:/novelApi
+      - api_data:/novelApi
       - ./log:/var/log/nginx
     ports:
       - 443:443
     depends_on:
-      - novelapi
-  novelapi:
+      - api
+  api:
     build: ./novelApi
-    image: novel-api
+    image: novel_api
     container_name: novelApi
     command: uwsgi --ini uwsgi.ini
     volumes:
-      - novelapi_data:/novelApi
+      - api_data:/novelApi
       - jenkins_data:/var/jenkins_home
     env_file:
       - ./novelApi/.env
@@ -54,5 +52,4 @@ services:
       - db
 volumes:
   jenkins_data:
-  db_data:
-  novelapi_data:
+  api_data:
