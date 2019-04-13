@@ -40,7 +40,7 @@ services:
       - novelapi
   novelapi:
     build: ./novelApi
-    image: novelApi
+    image: novelapi
     container_name: novelApi
     command: uwsgi --ini novelApiUwsgi.ini
     volumes:
