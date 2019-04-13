@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  jenkins:
+    build: ./jenkins
+    restart: always
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - jenkins_data:/var/jenkins_home
+  redis:
+    image: redis
+    restart: always
+  db:
+    image: mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: asd.0399
+      MYSQL_DATABASE: novel
+      MYSQL_USER: tuscany
+      MYSQL_PASSWORD: asd.0399
+  nginx:
+    build: ./nginx
+    restart: always
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - novelapi_data:/novelApi
+      - ./log:/var/log/nginx
+    ports:
+      - 443:443
+    depends_on:
+      - novelapi
+  novelapi:
+    build: ./apps/novelApi
+    command: uwsgi --ini novelApiUwsgi.ini
+    volumes:
+      - novelapi_data:/novelApi
+      - jenkins_data:/var/jenkins_home
+    env_file:
+      - ./apps/novelApi/novelApi.env
+    expose:
+      - 8002
+    depends_on:
+      - db
+volumes:
+  jenkins_data:
+  novelapi_data:
