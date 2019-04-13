@@ -40,7 +40,7 @@ services:
       - api
   api:
     build: ./novelApi
-    image: novelApi
+    image: novel-api
     container_name: novelApi
     command: uwsgi --ini uwsgi.ini
     volumes:
