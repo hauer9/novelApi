@@ -54,5 +54,5 @@ services:
       - db
 volumes:
   jenkins_data:
-  db_data:
   api_data:
+  db_data:
