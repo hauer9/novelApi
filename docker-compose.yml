@@ -21,9 +21,7 @@ services:
     build: ./novelApi
     image: novel_api
     container_name: novelApi
-    command:
-      - ["/wait-for-it.sh", "mysql:3306", "--"]
-      - uwsgi --ini uwsgi.ini
+    command: ["/wait-for-it.sh", "mysql:3306", "--", [uwsgi --ini uwsgi.ini]]
     volumes:
       - api_data:/novelApi
     env_file:
