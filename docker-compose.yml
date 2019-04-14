@@ -28,12 +28,12 @@ services:
       MYSQL_PASSWORD: asd.0399
   nginx:
     build: ./nginx
-    container_name: novelApi_nginx
+    container_name: nginx
     restart: always
     volumes:
       - jenkins_data:/var/jenkins_home
       - api_data:/novelApi
-      - sfexpressapi_api_data:/sfexpressApi_sfexpressapi_api_data
+      - sfexpressapi_api_data:/sfexpressapi_api_data
       - ./log:/var/log/nginx
     ports:
       - 443:443
@@ -59,4 +59,4 @@ volumes:
 networks:
   default:
     external:
-      name: nginx_network
+      name: nginx
