@@ -31,15 +31,9 @@ services:
     container_name: novelApi_nginx
     restart: always
     volumes:
-      - jenkins_data:/var/jenkins_home
-      - api_data:/novelApi
       - ./log:/var/log/nginx
     ports:
       - 443:443
-    depends_on:
-      - api
-    networks:
-      - nginx_network
   api:
     build: ./novelApi
     image: novel_api
@@ -58,6 +52,3 @@ volumes:
   jenkins_data:
   api_data:
   db_data:
-networks:
-  nginx_network:
-    driver: bridge
