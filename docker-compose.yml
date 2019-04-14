@@ -10,8 +10,6 @@ services:
     container_name: novelApi_mysql
     restart: always
     command: --default-authentication-plugin=mysql_native_password
-    volumes:
-      - db_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: asd.0399
       MYSQL_DATABASE: novel
@@ -36,5 +34,4 @@ networks:
   nginx_network:
     external: true
 volumes:
-  api_data:
   db_data:
