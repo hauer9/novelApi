@@ -36,9 +36,7 @@ services:
       - sfexpressApi_data:/sfexpressApi
       - ./log:/var/log/nginx
     ports:
-      - 443:443
-    links:
-      - sfexpressApi
+      - 443:443    
     networks:
       - nginx
   api:
