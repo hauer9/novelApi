@@ -37,7 +37,7 @@ services:
     ports:
       - 443:443
     networks:
-      - nginx
+      - nginx_network
   api:
     build: ./novelApi
     image: novel_api
@@ -57,5 +57,6 @@ volumes:
   api_data:
   db_data:
 networks:
-  nginx:
+  nginx_network:
+    driver: bridge
     external: true
