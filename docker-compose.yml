@@ -1,25 +1,27 @@
 version: "3"
 
 services:
-  redis:
-    image: redis
-    container_name: novelApi_redis
-    restart: always
   db:
     image: mysql
     container_name: novelApi_mysql
     restart: always
     command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - db_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: asd.0399
       MYSQL_DATABASE: novel
       MYSQL_USER: tuscany
       MYSQL_PASSWORD: asd.0399
+  redis:
+    image: redis
+    container_name: novelApi_redis
+    restart: always
   api:
     build: ./novelApi
     image: novel_api
     container_name: novelApi
-    command: python manage.py runserver
+    command: uwsgi --ini uwsgi.ini
     volumes:
       - api_data:/novelApi
     env_file:
@@ -35,3 +37,4 @@ networks:
     external: true
 volumes:
   api_data:
+  db_data:
