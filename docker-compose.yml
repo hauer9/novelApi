@@ -32,6 +32,8 @@ services:
     restart: always
     volumes:
       - jenkins_data:/var/jenkins_home
+      - api_data:/novelApi
+      - sfexpressApi_data:/sfexpressApi
       - ./log:/var/log/nginx
     ports:
       - 443:443
