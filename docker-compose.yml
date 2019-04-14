@@ -37,9 +37,6 @@ services:
       - ./log:/var/log/nginx
     ports:
       - 443:443
-    depends_on:
-      - api
-      - sfexpressApi
   api:
     build: ./novelApi
     image: novel_api
