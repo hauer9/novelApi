@@ -30,6 +30,8 @@ services:
       - 8002
     depends_on:
       - db
+    networks:
+      - nginx_network
 networks:
   nginx_network:
     external: true
