@@ -1,15 +1,6 @@
 version: "3"
 
 services:
-  jenkins:
-    build: ./jenkins
-    container_name: jenkins
-    restart: always
-    ports:
-      - 8080:8080
-      - 50000:50000
-    volumes:
-      - jenkins_data:/var/jenkins_home
   redis:
     image: redis
     container_name: novelApi_redis
@@ -26,19 +17,6 @@ services:
       MYSQL_DATABASE: novel
       MYSQL_USER: tuscany
       MYSQL_PASSWORD: asd.0399
-  nginx:
-    build: ./nginx
-    container_name: nginx
-    restart: always
-    volumes:
-      - jenkins_data:/var/jenkins_home
-      - api_data:/novelApi
-      - sfexpressapi_api_data:/sfexpressApi
-      - ./log:/var/log/nginx
-    ports:
-      - 443:443
-    networks:
-      - nginx_network
   api:
     build: ./novelApi
     image: novel_api
@@ -46,7 +24,6 @@ services:
     command: uwsgi --ini uwsgi.ini
     volumes:
       - api_data:/novelApi
-      - jenkins_data:/var/jenkins_home
     env_file:
       - ./novelApi/.env
     expose:
@@ -57,8 +34,5 @@ networks:
   nginx_network:
     external: true
 volumes:
-  jenkins_data:
   api_data:
   db_data:
-  sfexpressapi_api_data:
-    external: true
