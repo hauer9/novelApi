@@ -59,4 +59,3 @@ volumes:
 networks:
   nginx_network:
     driver: bridge
-    external: true
