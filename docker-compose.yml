@@ -19,7 +19,7 @@ services:
     build: ./novelApi
     image: novel_api
     container_name: novelApi
-    command: python manange.py runserver
+    command: python manage.py runserver
     volumes:
       - api_data:/novelApi
     env_file:
