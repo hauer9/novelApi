@@ -33,6 +33,7 @@ services:
     volumes:
       - jenkins_data:/var/jenkins_home
       - api_data:/novelApi
+      - sfexpressApi_data:/sfexpressApi
       - ./log:/var/log/nginx
     ports:
       - 443:443
@@ -54,6 +55,7 @@ services:
       - db
 volumes:
   jenkins_data:
+  sfexpressApi_data:
   api_data:
   db_data:
 networks:
