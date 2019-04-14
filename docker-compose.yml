@@ -33,14 +33,12 @@ services:
     volumes:
       - jenkins_data:/var/jenkins_home
       - api_data:/novelApi
-      - sfexpressApi_data:/sfexpressApi
+      - sfexpressapi_api_data:/sfexpressApi
       - ./log:/var/log/nginx
     ports:
       - 443:443
     networks:
       - nginx_network
-    external_links:
-      - sfexpressApi
   api:
     build: ./novelApi
     image: novel_api
@@ -61,5 +59,6 @@ networks:
 volumes:
   jenkins_data:
   api_data:
-  sfexpressApi_data:
   db_data:
+  sfexpressapi_api_data:
+    external: true
