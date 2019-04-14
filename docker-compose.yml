@@ -56,3 +56,7 @@ volumes:
   jenkins_data:
   api_data:
   db_data:
+networks:
+  default:
+    external:
+      name: sfexpressApi_network
