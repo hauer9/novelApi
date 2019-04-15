@@ -4,11 +4,12 @@ from .models import Novel, Type, Slider, Chapter
 
 class NovelAdmin(object):
     list_display = (
-        'id', )
+        'id', 'title', 'author', 'click_num', 'like_num', 'fav_num', 'cmt_num', 'status', 'create_time',
+        'last_update_time')
 
 
 class TypeAdmin(object):
-    list_display = ('id', 'name')
+    list_display = ('id',)
 
 
 class SliderAdmin(object):
