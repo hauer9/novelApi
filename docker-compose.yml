@@ -6,16 +6,16 @@ services:
     image: novel_api
     container_name: novelApi
     command: uwsgi --ini uwsgi.ini
-    volumes:
-      - api_data:/novelApi
     env_file:
       - ./novelApi/.env
+    volumes:
+      - api_data:/novelApi
     expose:
       - 8002
     networks:
       - nginx_network
+volumes:
+  api_data:
 networks:
   nginx_network:
     external: true
-volumes:
-  api_data:
