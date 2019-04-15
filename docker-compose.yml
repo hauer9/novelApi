@@ -1,26 +1,6 @@
 version: "3"
 
 services:
-  redis:
-    image: redis
-    container_name: novelApi_redis
-    restart: always
-    networks:
-      - nginx_network
-  db:
-    image: mysql
-    container_name: novelApi_mysql
-    restart: always
-    command: --default-authentication-plugin=mysql_native_password
-    volumes:
-      - db_data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: asd.0399
-      MYSQL_DATABASE: novel
-      MYSQL_USER: tuscany
-      MYSQL_PASSWORD: asd.0399
-    networks:
-      - nginx_network
   api:
     build: ./novelApi
     image: novel_api
@@ -32,8 +12,6 @@ services:
       - ./novelApi/.env
     expose:
       - 8002
-    depends_on:
-      - db
     networks:
       - nginx_network
 networks:
@@ -41,4 +19,3 @@ networks:
     external: true
 volumes:
   api_data:
-  db_data:
