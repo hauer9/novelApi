@@ -9,7 +9,7 @@ class NovelAdmin(object):
 
 
 class TypeAdmin(object):
-    list_display = ('id',)
+    list_display = ('id', 'name')
 
 
 class SliderAdmin(object):

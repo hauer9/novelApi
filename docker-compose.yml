@@ -9,7 +9,7 @@ services:
     env_file:
       - ./novelApi/.env
     volumes:
-      - ./novelApi:/novelApi
+      - api_data:/novelApi
     expose:
       - 8002
     networks:
