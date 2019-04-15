@@ -17,6 +17,8 @@ services:
       MYSQL_DATABASE: novel
       MYSQL_USER: tuscany
       MYSQL_PASSWORD: asd.0399
+    networks:
+      - nginx_network
   api:
     build: ./novelApi
     image: novel_api
