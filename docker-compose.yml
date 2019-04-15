@@ -5,6 +5,8 @@ services:
     image: redis
     container_name: novelApi_redis
     restart: always
+    networks:
+      - nginx_network
   db:
     image: mysql
     container_name: novelApi_mysql
