@@ -9,7 +9,7 @@ services:
     env_file:
       - ./novelApi/.env
     volumes:
-      - /Users/apple/workspace/python/apps/novelApi:/novelApi
+      - ./novelApi:/novelApi
     expose:
       - 8002
     networks:
