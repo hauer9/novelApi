@@ -14,7 +14,7 @@ class UserProfile(AbstractUser):
     gender = models.IntegerField(choices=gender_choices, default=2, verbose_name='性别',
                                  help_text='性别: 0(男), 1(女), 2(保密)')
     email = models.EmailField(max_length=50, null=True, blank=True, verbose_name='邮箱', help_text='邮箱')
-    avatar = models.URLField(null=True, blank=True, default='http://qiniu.tuscanyyy.top/avatar',
+    avatar = models.URLField(null=True, blank=True, default='qiniu.tuscanyyy.top/avatar',
                              verbose_name='头像', help_text='头像')
     is_verified = models.BooleanField(default=False, verbose_name='是否认证', help_text='是否认证')
     follows = models.ManyToManyField('self', blank=True, related_name='follows', verbose_name='关注的人', help_text='关注的人')

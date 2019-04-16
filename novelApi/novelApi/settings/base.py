@@ -152,3 +152,12 @@ REST_FRAMEWORK_EXTENSIONS = {
 
 # reg
 MOBILE_REG = '^1[34578]\d{9}$'
+
+# 云片
+API_KEY = 'abe1faed262c5e6ef5a7ef8b75927e52'
+
+# 七牛
+AK = 'DFRR7hd_lEoILDjPw2rRF6EpHAw1-qKVQHRpCEoT'
+SK = 'Uu7hsdlfDITJReT_RuTQczYIEUEnbi78wSQpMTOh'
+BUCKET = 'tuscany'
+QINIU_API = 'qiniu.tuscanyyy.top'
