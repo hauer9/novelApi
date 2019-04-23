@@ -8,7 +8,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 from novels.views import NovelViewSet, SliderViewSet, TypeViewSet, ChapterViewSet
 from users.views import UserViewSet, LoginSmsCodeViewSet, RegSmsCodeViewSet
-from operation.views import FavViewSet, LikeViewSet
+from operation.views import FavViewSet, LikeViewSet, CmtViewSet, HistoryViewSet
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'novels', NovelViewSet, base_name='novels')
@@ -20,6 +20,8 @@ router.register(r'logincodes', LoginSmsCodeViewSet, base_name='logincodes')
 router.register(r'regcodes', RegSmsCodeViewSet, base_name='regcodes')
 router.register(r'favs', FavViewSet, base_name='favs')
 router.register(r'likes', LikeViewSet, base_name='likes')
+router.register(r'cmts', CmtViewSet, base_name='cmts')
+router.register(r'historys', HistoryViewSet, base_name='historys')
 
 urlpatterns = [
     path('admin', xadmin.site.urls),

@@ -27,7 +27,7 @@ class Novel(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='作者', help_text='作者', related_name='novels')
     type = models.ForeignKey(Type, on_delete=models.CASCADE, verbose_name='类型', help_text='类型')
     introduction = models.CharField(max_length=500, null=True, blank=True, verbose_name='简介', help_text='简介')
-    cover = models.URLField(null=True, blank=True, default='qiniu.tuscanyyy.top/cover', verbose_name='封面', help_text='封面')
+    cover = models.URLField(null=True, blank=True, default='https://qiniu.tuscanyyy.top/cover.jpg', verbose_name='封面', help_text='封面')
     notice = models.CharField(max_length=500, null=True, blank=True, verbose_name='公告', help_text='公告')
     status = models.BooleanField(default=False, verbose_name='状态', help_text='状态')
     click_num = models.PositiveIntegerField(default=0, verbose_name='点击数量', help_text='点击数量')

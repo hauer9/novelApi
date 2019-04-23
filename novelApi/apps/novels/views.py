@@ -10,6 +10,7 @@ from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from utils.permissions import IsAuthorOrReadOnly
 from .models import Novel, Slider, Chapter, Type
+from operation.models import History
 from .serializers import NovelsCreateSerializer, NovelsDetailSerializer, NovelsUpdateSerializer, SliderSerializer, \
     TypeSerializer, ChapterCreateSerializer, ChapterDetailSerializer, ChapterUpdateSerializer
 
@@ -91,6 +92,8 @@ class NovelViewSet(CacheResponseMixin, mixins.ListModelMixin, mixins.CreateModel
         instance = self.get_object()
         instance.click_num += 1
         instance.save()
+        if request.user.is_authenticated:
+            History.objects.update_or_create(user=request.user, novel=instance)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
