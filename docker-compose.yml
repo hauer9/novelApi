@@ -9,13 +9,11 @@ services:
     env_file:
       - ./novelApi/.env
     volumes:
-      - api_data:/novelApi
-    expose:
-      - 8002
+      - ./novelApi:/novelApi
+    ports:
+      - 8002:8002
     networks:
       - nginx_network
-volumes:
-  api_data:
 networks:
   nginx_network:
     external: true
