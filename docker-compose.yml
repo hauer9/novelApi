@@ -10,8 +10,8 @@ services:
       - ./novelApi/.env
     volumes:
       - ./novelApi:/novelApi
-    ports:
-      - 8002:8002
+    expose:
+      - 8002
     networks:
       - nginx_network
 networks:
