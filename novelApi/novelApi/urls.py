@@ -21,7 +21,7 @@ router.register(r'regcodes', RegSmsCodeViewSet, base_name='regcodes')
 router.register(r'favs', FavViewSet, base_name='favs')
 router.register(r'likes', LikeViewSet, base_name='likes')
 router.register(r'cmts', CmtViewSet, base_name='cmts')
-router.register(r'historys', HistoryViewSet, base_name='historys')
+# router.register(r'historys', HistoryViewSet, base_name='historys')
 
 urlpatterns = [
     path('admin', xadmin.site.urls),
