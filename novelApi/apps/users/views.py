@@ -1,12 +1,12 @@
 import random
 import string
-from datetime import datetime, timedelta
 
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.conf import settings
 from rest_framework import mixins, viewsets, authentication, permissions
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
@@ -14,7 +14,8 @@ from rest_framework_jwt.serializers import jwt_payload_handler, jwt_encode_handl
 from utils.sms import Sms
 from utils.storage import Storage
 from .models import VerifyCode
-from .serializers import UserDetailSerializer, LoginSmsSerializer, RegSmsSerializer, UserRegSerialize
+from .serializers import UpdatePwdSerializer, CodeUpdatePwdSerializer, UserDetailSerializer, SmsSerializer, RegSmsSerializer, UserRegSerialize, \
+    OtherDetailSerializer
 
 User = get_user_model()
 
@@ -31,8 +32,49 @@ class CustomBackend(ModelBackend):
             return None
 
 
-class LoginSmsCodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    serializer_class = LoginSmsSerializer
+class CodeUpdatePwdViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    serializer_class = CodeUpdatePwdSerializer
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
+    permission_classes = (IsAuthenticated,)
+    queryset = User.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            user = User.objects.get(mobile=serializer.data.get("mobile"))
+            user.set_password(serializer.data.get("new_pwd"))
+            user.save()
+            return Response({"new_pwd": ['修改成功']}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdatePwdViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    serializer_class = UpdatePwdSerializer
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
+    permission_classes = (IsAuthenticated,)
+    queryset = User.objects.all()
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            if not self.object.check_password(serializer.data.get("old_pwd")):
+                return Response({"old_pwd": ["旧密码错误"]}, status=status.HTTP_400_BAD_REQUEST)
+            self.object.set_password(serializer.data.get("new_pwd"))
+            self.object.save()
+            return Response({"new_pwd": ['修改成功']}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SmsCodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    serializer_class = SmsSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -71,7 +113,8 @@ class RegSmsCodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             return Response({'mobile': mobile}, status=status.HTTP_201_CREATED)
 
 
-class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
+class UserViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+                  viewsets.GenericViewSet):
     serializer_class = UserDetailSerializer
     queryset = User.objects.all()
     authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
@@ -79,6 +122,8 @@ class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Upd
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return UserDetailSerializer
+        elif self.action == 'list':
+            return OtherDetailSerializer
         elif self.action == 'create':
             return UserRegSerialize
         return UserDetailSerializer

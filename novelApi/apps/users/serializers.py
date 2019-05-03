@@ -8,11 +8,101 @@ from rest_framework.validators import UniqueValidator
 from novels.serializers import NovelsDetailSerializer
 
 from users.models import VerifyCode
+from operation.models import Follow
+from operation.serializers import FavDetailSerializer
 
 User = get_user_model()
 
 
-class LoginSmsSerializer(serializers.Serializer):
+class CodeLogin(serializers.Serializer):
+    mobile = serializers.CharField(max_length=11, help_text='手机号',
+                                   error_messages={
+                                       'blank': '请输入手机号',
+                                       'required': '请输入手机号',
+                                       'max_length': '手机号格式错误',
+                                   })
+    code = serializers.CharField(required=True, write_only=True, max_length=6, min_length=6, label='验证码',
+                                 help_text='验证码',
+                                 error_messages={
+                                     'blank': '请输入验证码',
+                                     'required': '请输入验证码',
+                                     'max_length': '验证码格式错误',
+                                     'min_length': '验证码不少于6个数字',
+                                 })
+
+    def validate_code(self, code):
+        last_record = VerifyCode.objects.filter(mobile=self.initial_data['mobile']).last()
+        if last_record:
+            five__minutes_age = datetime.now() - timedelta(hours=0, minutes=15, seconds=0)
+            if five__minutes_age > last_record.create_time:
+                raise serializers.ValidationError('验证码已过期')
+            if last_record.code != code:
+                raise serializers.ValidationError('验证码错误')
+        else:
+            raise serializers.ValidationError('验证码错误')
+
+    def validate(self, attrs):
+        del attrs['code']
+        return attrs
+
+
+class CodeUpdatePwdSerializer(serializers.Serializer):
+    mobile = serializers.CharField(max_length=11, help_text='手机号',
+                                   error_messages={
+                                       'blank': '请输入手机号',
+                                       'required': '请输入手机号',
+                                       'max_length': '手机号格式错误',
+                                   })
+    code = serializers.CharField(required=True, write_only=True, max_length=6, min_length=6, label='验证码',
+                                 help_text='验证码',
+                                 error_messages={
+                                     'blank': '请输入验证码',
+                                     'required': '请输入验证码',
+                                     'max_length': '验证码格式错误',
+                                     'min_length': '验证码不少于6个数字',
+                                 })
+    new_pwd = serializers.CharField(required=True, max_length=100, label='新密码', help_text='新密码',
+                                    style={'input_type': 'password'},
+                                    error_messages={
+                                        'blank': '请输入新密码',
+                                        'required': '请输入新密码',
+                                        'max_length': '新密码格式错误',
+                                    })
+
+    def validate_code(self, code):
+        last_record = VerifyCode.objects.filter(mobile=self.initial_data['mobile']).last()
+        if last_record:
+            five__minutes_age = datetime.now() - timedelta(hours=0, minutes=15, seconds=0)
+            if five__minutes_age > last_record.create_time:
+                raise serializers.ValidationError('验证码已过期')
+            if last_record.code != code:
+                raise serializers.ValidationError('验证码错误')
+        else:
+            raise serializers.ValidationError('验证码错误')
+
+    def validate(self, attrs):
+        del attrs['code']
+        return attrs
+
+
+class UpdatePwdSerializer(serializers.Serializer):
+    old_pwd = serializers.CharField(required=True, max_length=100, label='旧密码', help_text='旧密码',
+                                    style={'input_type': 'password'},
+                                    error_messages={
+                                        'blank': '请输入旧密码',
+                                        'required': '请输入旧密码',
+                                        'max_length': '旧密码格式错误',
+                                    })
+    new_pwd = serializers.CharField(required=True, max_length=100, label='新密码', help_text='新密码',
+                                    style={'input_type': 'password'},
+                                    error_messages={
+                                        'blank': '请输入新密码',
+                                        'required': '请输入新密码',
+                                        'max_length': '新密码格式错误',
+                                    })
+
+
+class SmsSerializer(serializers.Serializer):
     mobile = serializers.CharField(max_length=11, help_text='手机号', error_messages={
         'blank': '请输入手机号',
         'required': '请输入手机号',
@@ -114,9 +204,34 @@ class UserRegSerialize(serializers.ModelSerializer):
         fields = ['username', 'mobile', 'code', 'password']
 
 
-class UserDetailSerializer(serializers.ModelSerializer):
+class OtherDetailSerializer(serializers.ModelSerializer):
     novels = NovelsDetailSerializer(many=True)
+    favs = FavDetailSerializer(many=True)
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['favs', 'id', 'username', 'mobile', 'email', 'gender', 'nickname', 'date_joined', 'follow_num', 'is_verified',
+                  'avatar', 'bgc', 'novels']
+
+
+class FollowDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'mobile', 'email', 'gender', 'nickname', 'date_joined', 'follow_num', 'is_verified', 'avatar']
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    user = FollowDetailSerializer()
+
+    class Meta:
+        model = Follow
+        fields = ('user',)
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    follows = FollowSerializer(many=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'mobile', 'email', 'gender', 'nickname', 'date_joined', 'follow_num', 'is_verified',
+                  'avatar', 'bgc', 'follows']

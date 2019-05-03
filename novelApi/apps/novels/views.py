@@ -1,3 +1,4 @@
+from rest_framework.decorators import api_view
 from rest_framework import viewsets, status
 from rest_framework import mixins, authentication, permissions
 from rest_framework.pagination import PageNumberPagination
@@ -9,10 +10,19 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 from utils.permissions import IsAuthorOrReadOnly
-from .models import Novel, Slider, Chapter, Type
+from jieba import analyse
+from .models import Novel, Slider, Chapter, Type, Tag
 from operation.models import History
 from .serializers import NovelsCreateSerializer, NovelsDetailSerializer, NovelsUpdateSerializer, SliderSerializer, \
-    TypeSerializer, ChapterCreateSerializer, ChapterDetailSerializer, ChapterUpdateSerializer
+    TypeSerializer, TagSerializer, ChapterCreateSerializer, ChapterDetailSerializer, ChapterUpdateSerializer
+
+
+@api_view(['POST'])
+def extract_tags(request):
+    content = request.data['content']
+    topK = request.data['topK']
+    tags = analyse.extract_tags(content, topK=topK)
+    return Response({'tags': tags})
 
 
 class NovelSetPagination(PageNumberPagination):
@@ -20,8 +30,45 @@ class NovelSetPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
 
 
-class ChapterViewSet(CacheResponseMixin, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
-                     viewsets.GenericViewSet):
+class RankViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    pagination_class = NovelSetPagination
+    serializer_class = NovelsDetailSerializer
+
+    def get_queryset(self):
+        Novel.objects.filter()
+
+
+class RecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    pagination_class = NovelSetPagination
+    serializer_class = NovelsDetailSerializer
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            historys = History.objects.filter(user=self.request.user)[:50]
+            if historys.exists():
+                tags_content = ''
+                novels = Novel.objects.none()
+                for title in historys:
+                    novel = Novel.objects.get(title=title)
+                    tags = novel.tags.all()
+                    for tag in tags:
+                        tags_content += tag.name
+                tags = analyse.extract_tags(tags_content, topK=5)
+                for tag in tags:
+                    novel = Novel.objects.filter(tags__name__icontains=tag)
+                    novels = novels | novel
+                novels = novels.distinct()
+                if novels.exists():
+                    return novels
+                else:
+                    return Novel.objects.all().order_by('-click_num')
+            else:
+                Novel.objects.all().order_by('-click_num')
+        return Novel.objects.all().order_by('-click_num')
+
+
+class ChapterViewSet(viewsets.ModelViewSet):
     serializer_class = ChapterDetailSerializer
     queryset = Chapter.objects.all()
     throttle_classes = (AnonRateThrottle, UserRateThrottle)
@@ -47,7 +94,7 @@ class ChapterViewSet(CacheResponseMixin, mixins.ListModelMixin, mixins.CreateMod
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class NovelViewSet(CacheResponseMixin, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class NovelViewSet(viewsets.ModelViewSet):
     serializer_class = NovelsDetailSerializer
     queryset = Novel.objects.all()
     pagination_class = NovelSetPagination
@@ -73,17 +120,20 @@ class NovelViewSet(CacheResponseMixin, mixins.ListModelMixin, mixins.CreateModel
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         title = serializer.validated_data['title']
         author = serializer.validated_data['author']
         type = serializer.validated_data['type']
+        tags = serializer.validated_data['tags']
+        tags = tags.split(',')
         chapter_title = serializer.validated_data['chapter']['chapter_title']
         chapter_content = serializer.validated_data['chapter']['chapter_content']
 
         novel = Novel(title=title, type=type, author=author)
         novel.save()
-        chapters = Chapter(novel=novel, chapter_title=chapter_title, chapter_num=1, chapter_content=chapter_content)
-        chapters.save()
+        for name in tags:
+            tag, created = Tag.objects.get_or_create(name=name)
+            novel.tags.add(tag)
+        Chapter.objects.create(novel=novel, chapter_title=chapter_title, chapter_content=chapter_content)
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -99,7 +149,7 @@ class NovelViewSet(CacheResponseMixin, mixins.ListModelMixin, mixins.CreateModel
 
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,)
     search_fields = ('title',)
-    filter_fields = ('type', 'status')
+    filter_fields = ('author', 'type', 'status')
     ordering_fields = ('create_time', 'click_num', 'fav_num', 'like_num')
 
 
@@ -111,3 +161,8 @@ class SliderViewSet(CacheResponseMixin, mixins.ListModelMixin, viewsets.GenericV
 class TypeViewSet(mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     serializer_class = TypeSerializer
     queryset = Type.objects.all()
+
+
+class TagViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all()

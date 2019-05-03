@@ -16,11 +16,13 @@ class UserProfile(AbstractUser):
     email = models.EmailField(max_length=50, null=True, blank=True, verbose_name='邮箱', help_text='邮箱')
     avatar = models.URLField(null=True, blank=True, default='https://qiniu.tuscanyyy.top/avatar.jpg',
                              verbose_name='头像', help_text='头像')
+    bgc = models.URLField(null=True, blank=True, default='https://qiniu.tuscanyyy.top/bgc.jpg',
+                          verbose_name='背景', help_text='背景')
     is_verified = models.BooleanField(default=False, verbose_name='是否认证', help_text='是否认证')
-    follows = models.ManyToManyField('self', blank=True, related_name='follows', verbose_name='关注的人', help_text='关注的人')
+    follow_num = models.PositiveIntegerField(default=0, verbose_name='关注人数', help_text='关注人数')
 
     def __str__(self):
-        return self.mobile
+        return self.username
 
     class Meta:
         verbose_name = '用户'
