@@ -5,6 +5,7 @@ services:
     build: ./novelApi
     image: novel_api
     container_name: novelApi
+    restart: always
     command: uwsgi --ini uwsgi.ini
     env_file:
       - ./novelApi/.env
