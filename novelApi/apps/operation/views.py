@@ -1,6 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions
-from rest_framework import viewsets, mixins, authentication
+from rest_framework import viewsets, authentication
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
@@ -10,6 +10,7 @@ from .models import Fav, Like, Cmt, History, SearchRecord, Follow
 from .serializers import FavCreateSerializer, LikeCreateSerializer, FavDetailSerializer, LikeDetailSerializer, \
     CmtCreateSerializer, CmtDetailSerializer, HistorySerializer, SearchRecordSerializer, SearchRecordCreateSerializer, \
     FollowCreateSerializer, FollowDetailSerializer
+from .filter import HistoryFilter
 
 
 class Pagination(PageNumberPagination):
@@ -106,7 +107,7 @@ class HistoryViewSet(viewsets.ModelViewSet):
     authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     lookup_field = 'novel_id'
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,)
-    filter_fields = ('update_time',)
+    filter_class = HistoryFilter
 
     def get_queryset(self):
         return History.objects.filter(user=self.request.user)
@@ -114,7 +115,6 @@ class HistoryViewSet(viewsets.ModelViewSet):
 
 class SearchRecordViewSet(viewsets.ModelViewSet):
     serializer_class = SearchRecordSerializer
-    pagination_class = Pagination
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
     authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,)
@@ -132,6 +132,7 @@ class SearchRecordViewSet(viewsets.ModelViewSet):
 class FollowViewSet(viewsets.ModelViewSet):
     serializer_class = FollowDetailSerializer
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
+    pagination_class = Pagination
     authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     lookup_field = 'follower_id'
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,)
