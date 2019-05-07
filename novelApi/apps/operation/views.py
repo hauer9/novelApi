@@ -106,7 +106,7 @@ class HistoryViewSet(viewsets.ModelViewSet):
     authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     lookup_field = 'novel_id'
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,)
-    search_fields = ('update_time',)
+    filter_fields = ('update_time',)
 
     def get_queryset(self):
         return History.objects.filter(user=self.request.user)
