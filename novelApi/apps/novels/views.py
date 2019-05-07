@@ -41,7 +41,6 @@ class RankViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 class RecommendViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     pagination_class = NovelSetPagination
     serializer_class = NovelsDetailSerializer
-    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
 
     def get_queryset(self):
         if self.request.user.is_authenticated:

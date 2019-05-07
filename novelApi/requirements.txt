@@ -46,3 +46,4 @@ XlsxWriter==1.1.5
 xlwt==1.3.0
 uwsgi
 jieba
+django-cors-headers
