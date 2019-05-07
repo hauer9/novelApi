@@ -132,7 +132,6 @@ class SearchRecordViewSet(viewsets.ModelViewSet):
 class FollowViewSet(viewsets.ModelViewSet):
     serializer_class = FollowDetailSerializer
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
-    pagination_class = Pagination
     authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     lookup_field = 'follower_id'
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,)
