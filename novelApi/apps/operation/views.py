@@ -115,6 +115,7 @@ class HistoryViewSet(viewsets.ModelViewSet):
 
 class SearchRecordViewSet(viewsets.ModelViewSet):
     serializer_class = SearchRecordSerializer
+    pagination_class = Pagination
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
     authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,)
