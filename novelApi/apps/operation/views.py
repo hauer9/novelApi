@@ -10,7 +10,7 @@ from .models import Fav, Like, Cmt, History, SearchRecord, Follow
 from .serializers import FavCreateSerializer, LikeCreateSerializer, FavDetailSerializer, LikeDetailSerializer, \
     CmtCreateSerializer, CmtDetailSerializer, HistorySerializer, SearchRecordSerializer, SearchRecordCreateSerializer, \
     FollowCreateSerializer, FollowDetailSerializer
-from .filter import HistoryFilter
+from .filter import HistoryFilter, SearchRecordFilter
 
 
 class Pagination(PageNumberPagination):
@@ -118,7 +118,7 @@ class SearchRecordViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
     authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter,)
-    search_fields = ('update_time',)
+    filter_class = SearchRecordFilter
 
     def get_serializer_class(self):
         if self.action == 'create':
