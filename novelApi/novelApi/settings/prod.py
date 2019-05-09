@@ -12,7 +12,7 @@ DATABASES = {
         'NAME': 'novel',
         'USER': 'root',
         'PASSWORD': os.environ['MYSQL_PASSWORD'],
-        'HOST': 'db',
+        'HOST': 'mysql',
         'PORT': '3306',
     }
 }
