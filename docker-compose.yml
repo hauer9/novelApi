@@ -14,7 +14,7 @@ services:
     expose:
       - 8002
     networks:
-      - nginx_network
+      - network
 networks:
-  nginx_network:
+  network:
     external: true
