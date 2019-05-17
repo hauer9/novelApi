@@ -1,3 +1,5 @@
+build:
+	git pull && docker-compose up -d --build
 restart:
 	git pull && docker-compose restart
 logs:
