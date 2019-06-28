@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 import xadmin
 from rest_framework import routers
 from rest_framework.documentation import include_docs_urls
-from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
 from novels.views import NovelViewSet, SliderViewSet, TypeViewSet, TagViewSet, ChapterViewSet, extract_tags, RecommendViewSet
 from users.views import UpdatePwdViewSet, CodeUpdatePwdViewSet, UserViewSet, SmsCodeViewSet, RegSmsCodeViewSet
@@ -33,6 +33,7 @@ urlpatterns = [
     path('admin', xadmin.site.urls),
     path('', include(router.urls)),
     path('login', obtain_jwt_token),
+    path('refresh_token', refresh_jwt_token),
     path('extract_tags', extract_tags),
     path('auth', include('rest_framework.urls', namespace='rest_framework')),
     path('doc', include_docs_urls(title='分享阅读网')),
